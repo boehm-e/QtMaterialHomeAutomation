@@ -33,7 +33,7 @@ Rectangle {
     }
 
     ListView {
-        interactive: false
+        interactive: true
         anchors.fill: parent
         anchors.top: parent.top
         anchors.topMargin: 50
@@ -114,12 +114,13 @@ Rectangle {
 
         }
         add: Transition {
-            NumberAnimation { property: "opacity"; from: 0; to: 1.0; duration: 400 }
-            NumberAnimation { property: "scale"; from: 0; to: 1.0; duration: 400 }
+            NumberAnimation { property: "opacity"; from: 0; to: 1.0; duration: 200 }
+            NumberAnimation { property: "scale"; from: 0.5; to: 1.0; duration: 200 }
         }
 
         displaced: Transition {
-            NumberAnimation { properties: "y"; duration: 100; easing.type: Easing.OutBounce }
+//            NumberAnimation { properties: "y"; duration: 400; easing.type: Easing.OutBounce }
+            NumberAnimation { properties: "y"; duration: 400; easing.type: Easing.OutSine }
         }
 
         model: notif
@@ -131,7 +132,6 @@ Rectangle {
     }
 
     Component.onCompleted:  {
-        notif.insert(0,{textNotif: "test", image: ""})
     }
 }
 

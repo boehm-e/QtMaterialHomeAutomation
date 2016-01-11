@@ -256,7 +256,7 @@ ApplicationWindow {
 
     WebSocket {
         id: socket
-        url: "ws://192.168.1.38:8080"
+        url: "ws://192.168.0.38:8080"
 
         onTextMessageReceived: {
             var parsed = JSON.parse(message);
@@ -273,8 +273,8 @@ ApplicationWindow {
             else {
                 fragment2.addNotif(message, "")
             }
-        }
 
+        }
 
         onStatusChanged: if (socket.status == WebSocket.Error) {
                              console.log("Error: " + socket.errorString)
@@ -284,6 +284,18 @@ ApplicationWindow {
                              console.debug("\nSocket closed")
                          }
         active: true
+
     }
+    Timer {
+        interval: 500; running: true; repeat: true
+        onTriggered: {
+            console.debug(socket.status + " : " + WebSocket.Closed)
+            if (socket.status != 1) {
+                socket.active = false
+                socket.active = true
+            }
+        }
+    }
+    Component.onDestruction: socket.destroy()
 }
 
