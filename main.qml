@@ -12,7 +12,8 @@ ApplicationWindow {
     height: 480
     title: qsTr("EPIC")
     id: abcd
-    Component.onCompleted:  abcd.showMaximized();
+//    Component.onCompleted:  abcd.showMaximized();
+    Component.onCompleted:  abcd.showFullScreen();
     readonly property int dpi: Screen.pixelDensity * 25.4
     function dp(x){ return (dpi < 120) ? x : x*(dpi/160); }
 
@@ -104,7 +105,7 @@ ApplicationWindow {
         anchors.bottom: parent.bottom
         visible: true
         anchors.leftMargin: 20
-        anchors.rightMargin: width>700?40:20
+        anchors.rightMargin:/* width>700?40:20*/ 40
         z: 1
     }
 
@@ -127,6 +128,15 @@ ApplicationWindow {
 
     Fragment3 {
         id: fragment3
+        anchors.top: menuRect.bottom
+        anchors.left: parent.left
+        anchors.right: parent.right
+        anchors.bottom: parent.bottom
+        visible: false
+    }
+
+    Fragment4 {
+        id: fragment4
         anchors.top: menuRect.bottom
         anchors.left: parent.left
         anchors.right: parent.right
@@ -192,12 +202,15 @@ ApplicationWindow {
                     fragment1.visible = false
                     fragment2.visible = false
                     fragment3.visible = false
+                    fragment4.visible = false
                     if (index == 0)
                         fragment1.visible = true
                     else if(index == 1)
                         fragment2.visible = true
                     else if(index == 2)
                         fragment3.visible = true
+                    else if(index == 3)
+                        fragment4.visible = true
                     nav.open = false
 
                 }
@@ -250,30 +263,33 @@ ApplicationWindow {
 
         ListElement {fragment: "Etat general"; }
         ListElement {fragment: "Notifications"; }
-        ListElement {fragment: "Conact"; }
+        ListElement {fragment: "WebView"; }
+        ListElement {fragment: "Contact"; }
     }
 
 
     WebSocket {
         id: socket
-        url: "ws://192.168.0.38:8080"
+        url: "ws://127.0.0.1:8080"
 
         onTextMessageReceived: {
             var parsed = JSON.parse(message);
-            console.debug(notifNumber + " : " + parsed)
+            console.debug("DATA : "+message);
             notifNumber += 1
             notifCount.changeNotifNumber(notifNumber)
 
-            if (parsed[0] == "meteo") {
-                fragment2.addNotif(parsed[1], "weather.svg")
-            }
-            else if(parsed[0] == "light") {
-                fragment2.addNotif(parsed[1], "light.svg")
-            }
-            else {
-                fragment2.addNotif(message, "")
-            }
+            var pictures = {};
+            pictures["meteo"] = "weather.svg";
+            pictures["light"] = "light.svg";
 
+            if (parsed[0] == "notif")
+                fragment2.addNotif(parsed[2], pictures[parsed[1]]);
+            else if(parsed[0] == "state")
+                fragment1.setSwitch(parsed[1], parsed[2])
+            else if(parsed[0] == "url") {
+                fragment3.weburl = parsed[2];
+                listview.showFragment(2);
+            }
         }
 
         onStatusChanged: if (socket.status == WebSocket.Error) {
@@ -289,7 +305,7 @@ ApplicationWindow {
     Timer {
         interval: 500; running: true; repeat: true
         onTriggered: {
-            console.debug(socket.status + " : " + WebSocket.Closed)
+//            console.debug(socket.status + " : " + WebSocket.Closed)
             if (socket.status != 1) {
                 socket.active = false
                 socket.active = true

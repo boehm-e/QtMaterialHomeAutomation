@@ -6,7 +6,9 @@ Rectangle {
     id: notifications
     MouseArea {
         anchors.fill: parent
-        onClicked: addNotif("coucou")
+        onClicked: {
+            addNotif("coucou");
+        }
     }
 
     color: "#EEEEEE"

@@ -3,12 +3,11 @@
         <file>main.qml</file>
         <file>Fragment1.qml</file>
         <file>Fragment2.qml</file>
-        <file>Fragment3.qml</file>
+        <file>Fragment4.qml</file>
         <file>NavigationDrawer.qml</file>
         <file>background.jpg</file>
         <file>logo_menu.svg</file>
         <file>SwitchMaterial.qml</file>
-        <file>knob.png</file>
         <file>switchBackground.png</file>
         <file>switchBackground.svg</file>
         <file>light.svg</file>
@@ -16,5 +15,7 @@
         <file>delete.svg</file>
         <file>epic.png</file>
         <file>RoomMaterial.qml</file>
+        <file>knob.png</file>
+        <file>Fragment3.qml</file>
     </qresource>
 </RCC>

@@ -7,22 +7,24 @@ Item {
     width: background.width; height: background.height
 
     property bool on: false
+    property string room: ""
 
     function toggle() {
-        if (toggleswitch.state == "on")
+        if (toggleswitch.state == "on") {
+            socket.sendTextMessage(JSON.stringify(["state",room, false]))
             toggleswitch.state = "off";
-        else
+        }
+        else {
+            socket.sendTextMessage(JSON.stringify(["state",room, true]))
             toggleswitch.state = "on";
+        }
     }
 
-    function releaseSwitch() {
-        if (knob.x == 1) {
-            if (toggleswitch.state == "off") return;
-        }
-        if (knob.x == 78) {
-            if (toggleswitch.state == "on") return;
-        }
-        toggle();
+    function changeSwitch(status) {
+        if (status == true)
+            toggleswitch.state = "on";
+        else if (status == false)
+            toggleswitch.state = "off"
     }
 
     Image {
@@ -32,35 +34,29 @@ Item {
         width: 15 * Screen.logicalPixelDensity
         height: 5.6 * Screen.logicalPixelDensity
         ColorOverlay {
-                id: backgroundOverlay
-               anchors.fill: background
-               source: background
-               smooth: true
-               color: "#B0AFAF"
-           }
+            id: backgroundOverlay
+            anchors.fill: background
+            source: background
+            smooth: true
+            color: "#B0AFAF"
+        }
         MouseArea { anchors.fill: parent; onClicked: toggle() }
     }
-    Image {
+    Rectangle {
         id: knob
-        x: 0; y: 0
+        x: -1; y: 0
         height: 8 * Screen.logicalPixelDensity
         anchors.verticalCenter: parent.verticalCenter
         width: height
-        source: "knob.png"
+        color: "#F1F1F1"
         smooth: true
-        ColorOverlay {
-            id: knobOverlay
-            anchors.fill: knob
-            source: knob
-            smooth: true
-            color: "#F1F1F1"
-        }
+        radius: width / 2
 
         MouseArea {
             anchors.fill: parent
-            drag.target: knob; drag.axis: Drag.XAxis; drag.minimumX: 0; drag.maximumX: 8.5 * Screen.logicalPixelDensity
+            //            drag.target: knob; drag.axis: Drag.XAxis; drag.minimumX: -1; drag.maximumX: 8.5 * Screen.logicalPixelDensity
             onClicked: toggle()
-            onReleased: releaseSwitch()
+            //            onReleased: releaseSwitch()
         }
     }
 
@@ -70,14 +66,14 @@ Item {
             PropertyChanges { target: knob; x: 7.5 * Screen.logicalPixelDensity}
             PropertyChanges { target: toggleswitch; on: true }
             PropertyChanges { target: backgroundOverlay; color: "#75BEB8" }
-            PropertyChanges { target: knobOverlay; color: "#009688" }
+            PropertyChanges { target: knob; color: "#009688" }
         },
         State {
             name: "off"
-            PropertyChanges { target: knob; x: 0 }
+            PropertyChanges { target: knob; x: -1 }
             PropertyChanges { target: toggleswitch; on: false }
             PropertyChanges { target: backgroundOverlay; color: "#B0AFAF" }
-            PropertyChanges { target: knobOverlay; color: "#F1F1F1" }
+            PropertyChanges { target: knob; color: "#F1F1F1" }
         }
     ]
 
